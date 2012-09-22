@@ -1,0 +1,19 @@
+{
+  "name": "jumjum",
+  "version": "0.0.1-17",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "bundleDependencies": [
+    "express",
+    "hbs",
+    "socket.io",
+    "request"
+  ],
+  "noAnalyze": true,
+  "subdomain": "jumjum",
+  "engines": {
+    "node": "0.8.x"
+  }
+}
