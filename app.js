@@ -58,40 +58,31 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-
 app.get('/subscribe', function(req, res) {
+  res.send("/subscribe/object/objectid\n/subscribe/tag/hksn\n");
+});
+
+app.get('/subscribe/:object/:objectid', function(req, res) {
   var args = {
     method: "POST",
     url: "https://api.instagram.com/v1/subscriptions/",
     form: {
       client_id: "ece9571300f54b3a90e8b46b8a7ca882",
       client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
-      object: "location",
+      object: req.params["object"],
       aspect: "media",
-      object_id: "1257285",
+      object_id: req.params["objectid"],
       callback_url: "http://jumjum.jit.su/callback/"
     }
   };
 
   request(args, function (e, r, body) {
-    console.log("post response");
     console.log(body);
     res.send(body);
   });
-
-  // var r = request.post('https://api.instagram.com/v1/subscriptions/');
-  // var form = r.form();
-  // form.append('client_id', 'ece9571300f54b3a90e8b46b8a7ca882');
-  // form.append('client_secret', 'eeb25b35adf84786866c6ae7bfae43bb');
-  // form.append('object', 'location');
-  // form.append('aspect', 'media');
-  // form.append('object_id', '1257285');
-  // form.append('callback_url', 'http://jumjum.jit.su/callback/');
-
 });
 
 app.get('/callback', function(req, res) {
-  console.log("callback");
   console.log(req.query);
   res.send(req.query["hub.challenge"]);
 });
