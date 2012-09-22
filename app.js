@@ -58,7 +58,23 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/subscribe', function(req, res) {
+app.get('/subscriptions', function (req, res) {
+  var args = {
+    method: "GET",
+    url: "https://api.instagram.com/v1/subscriptions",
+    qs: {
+      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+      client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
+    }
+  };
+
+  request(args, function (e, r, body) {
+    console.log(body);
+    res.send(body);
+  });
+});
+
+app.get('/subscribe', function (req, res) {
   res.send("/subscribe/object/objectid\n/subscribe/tag/hksn\n");
 });
 
@@ -79,6 +95,23 @@ app.get('/subscribe/:object/:objectid', function(req, res) {
   request(args, function (e, r, body) {
     console.log(body);
     res.send(body);
+  });
+});
+
+app.get('/delete/:id', function(req, res) {
+  var args = {
+    method: "DELETE",
+    url: "https://api.instagram.com/v1/subscriptions",
+    qs: {
+      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+      client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
+      id: req.params["id"]
+    }
+  };
+
+  request(args, function (e, r, body) {
+    console.log(body);
+    req.send(body);
   });
 });
 
