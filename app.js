@@ -59,11 +59,11 @@ app.get('/', function(req, res) {
 });
 
 
-app.get('/insta', function(req, res) {
+app.get('/subscribe', function(req, res) {
   var args = {
     method: "POST",
     url: "https://api.instagram.com/v1/subscriptions/",
-    qs: {
+    form: {
       client_id: "ece9571300f54b3a90e8b46b8a7ca882",
       client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
       object: "location",
@@ -78,6 +78,16 @@ app.get('/insta', function(req, res) {
     console.log(body);
     res.send(body);
   });
+
+  // var r = request.post('https://api.instagram.com/v1/subscriptions/');
+  // var form = r.form();
+  // form.append('client_id', 'ece9571300f54b3a90e8b46b8a7ca882');
+  // form.append('client_secret', 'eeb25b35adf84786866c6ae7bfae43bb');
+  // form.append('object', 'location');
+  // form.append('aspect', 'media');
+  // form.append('object_id', '1257285');
+  // form.append('callback_url', 'http://jumjum.jit.su/callback/');
+
 });
 
 app.get('/callback', function(req, res) {
@@ -86,8 +96,9 @@ app.get('/callback', function(req, res) {
   res.send(req.query["hub.challenge"]);
 });
 
-app.post('/insta', function(req, res) {
+app.post('/callback', function(req, res) {
   console.log("OMG HOW DID THIS HAPPEND?");
+  console.log(req.body);
 });
 
 ////////////////////////////////////////////////
