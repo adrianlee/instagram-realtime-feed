@@ -74,10 +74,6 @@ app.get('/subscriptions', function (req, res) {
   });
 });
 
-app.get('/subscribe', function (req, res) {
-  res.send("/subscribe/object/objectid\n/subscribe/tag/hksn\n");
-});
-
 app.get('/subscribe/:object/:objectid', function(req, res) {
   var args = {
     method: "POST",
@@ -111,7 +107,7 @@ app.get('/delete/:id', function(req, res) {
 
   request(args, function (e, r, body) {
     console.log(body);
-    req.send(body);
+    res.send(body);
   });
 });
 
@@ -121,9 +117,45 @@ app.get('/callback', function(req, res) {
 });
 
 app.post('/callback', function(req, res) {
-  console.log("OMG HOW DID THIS HAPPEND?");
   console.log(req.body);
+  processPayload(req.body);
 });
+
+
+////////////////////////////////////////////////
+// Function
+////////////////////////////////////////////////
+
+function processPayload(payload) {
+  var i;
+
+  for (obj in payload) {
+    var args,
+        endpoint,
+        object = obj.object,
+        object_id = obj.object_id;
+
+    if (object === "geography") {
+      endpoint = "https://api.instagram.com/v1/geographies/" + object_id + "/media/recent";
+    } else if (object === "tag") {
+      endpoint = "https://api.instagram.com/v1/tags/" + object_id + "/media/recent";
+    }
+
+    args = {
+      method: "GET",
+      url: endpoint,
+      qs: {
+        client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+        client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
+      }
+    };
+
+    request(args, function (e, r, body) {
+      console.log("Process Payload");
+      console.log(body);
+    });
+  }
+}
 
 ////////////////////////////////////////////////
 // HTTP Server
