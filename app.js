@@ -53,7 +53,7 @@ hbs.registerHelper('block', function(name) {
 ////////////////////////////////////////////////
 // Router
 ////////////////////////////////////////////////
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
   res.locals.title = "Realtime Instagram";
   res.render('index');
 });
@@ -63,8 +63,8 @@ app.get('/subscriptions', function (req, res) {
     method: "GET",
     url: "https://api.instagram.com/v1/subscriptions",
     qs: {
-      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
-      client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
+      client_id: process.env["instagram-id"],
+      client_secret: process.env["instagram-secret"]
     }
   };
 
@@ -79,8 +79,8 @@ app.get('/subscribe/:object/:objectid', function(req, res) {
     method: "POST",
     url: "https://api.instagram.com/v1/subscriptions/",
     form: {
-      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
-      client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
+      client_id: process.env["instagram-id"],
+      client_secret: process.env["instagram-secret"],
       object: req.params["object"],
       aspect: "media",
       object_id: req.params["objectid"],
@@ -99,8 +99,8 @@ app.get('/delete/:id', function(req, res) {
     method: "DELETE",
     url: "https://api.instagram.com/v1/subscriptions",
     qs: {
-      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
-      client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
+      client_id: process.env["instagram-id"],
+      client_secret: process.env["instagram-secret"],
       id: req.params["id"]
     }
   };
@@ -111,12 +111,12 @@ app.get('/delete/:id', function(req, res) {
   });
 });
 
-app.get('/callback', function(req, res) {
+app.get('/callback', function (req, res) {
   console.log(req.query);
   res.send(req.query["hub.challenge"]);
 });
 
-app.post('/callback', function(req, res) {
+app.post('/callback', function (req, res) {
   console.log(req.body);
   processPayload(req.body);
 });
@@ -129,7 +129,10 @@ app.post('/callback', function(req, res) {
 function processPayload(payload) {
   var i;
 
+  console.log(payload);
+
   for (obj in payload) {
+    console.log(obj);
     var args,
         endpoint,
         object = obj.object,
@@ -141,12 +144,14 @@ function processPayload(payload) {
       endpoint = "https://api.instagram.com/v1/tags/" + object_id + "/media/recent";
     }
 
+    console.log(endpoint);
+
     args = {
       method: "GET",
-      url: endpoint,
+      uri: endpoint,
       qs: {
-        client_id: "ece9571300f54b3a90e8b46b8a7ca882",
-        client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
+        client_id: process.env["instagram-id"],
+        client_secret: process.env["instagram-secret"]
       }
     };
 
