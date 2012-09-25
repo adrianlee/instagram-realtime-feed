@@ -63,8 +63,8 @@ app.get('/subscriptions', function (req, res) {
     method: "GET",
     url: "https://api.instagram.com/v1/subscriptions",
     qs: {
-      client_id: process.env["instagram-id"],
-      client_secret: process.env["instagram-secret"]
+      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+      client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
     }
   };
 
@@ -79,8 +79,8 @@ app.get('/subscribe/:object/:objectid', function(req, res) {
     method: "POST",
     url: "https://api.instagram.com/v1/subscriptions/",
     form: {
-      client_id: process.env["instagram-id"],
-      client_secret: process.env["instagram-secret"],
+      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+      client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
       object: req.params["object"],
       aspect: "media",
       object_id: req.params["objectid"],
@@ -99,8 +99,8 @@ app.get('/delete/:id', function(req, res) {
     method: "DELETE",
     url: "https://api.instagram.com/v1/subscriptions",
     qs: {
-      client_id: process.env["instagram-id"],
-      client_secret: process.env["instagram-secret"],
+      client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+      client_secret: "eeb25b35adf84786866c6ae7bfae43bb",
       id: req.params["id"]
     }
   };
@@ -148,10 +148,10 @@ function processPayload(payload) {
 
     args = {
       method: "GET",
-      uri: endpoint,
+      url: endpoint,
       qs: {
-        client_id: process.env["instagram-id"],
-        client_secret: process.env["instagram-secret"]
+        client_id: "ece9571300f54b3a90e8b46b8a7ca882",
+        client_secret: "eeb25b35adf84786866c6ae7bfae43bb"
       }
     };
 
