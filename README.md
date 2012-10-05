@@ -28,6 +28,6 @@ curl -F 'client_id=ece9571300f54b3a90e8b46b8a7ca882' \
      
 Todo
 ====
-- Listen to instragram callback from subscription and request recent image via retrn params
+- ~~Listen to instragram callback from subscription and~~ request recent image with subscription callback params
 - save response from recent image request to redis queue, meanwhile push image to client via socket
 - use redis pubsub to socket.
