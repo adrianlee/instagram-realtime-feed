@@ -1,12 +1,13 @@
 var express = require('express'),
     http = require('http'),
     path = require('path'),
+    app = express(),
+    server = http.createServer(app),
+    io = require('socket.io').listen(server),
 
     // Third Party
     hbs = require('hbs'),
     request = require('request');
-
-var app = express();
 
 ////////////////////////////////////////////////
 // Express Configuration
@@ -162,9 +163,25 @@ function processPayload(payload) {
   }
 }
 
+
+
+////////////////////////////////////////////////
+// socket.io
+////////////////////////////////////////////////
+console.log(io);
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('init', { url: 'http://distilleryimage0.instagram.com/f3088116110e11e2b0c912313b089111_7.jpg' });
+  // socket.emit('init', []);
+  socket.on('success', function (data) {
+    console.log(data);
+  });
+});
+
+
 ////////////////////////////////////////////////
 // HTTP Server
 ////////////////////////////////////////////////
-http.createServer(app).listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });

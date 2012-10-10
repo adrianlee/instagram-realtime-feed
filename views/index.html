@@ -6,3 +6,21 @@
     <li><a href="/subscribe/location/1257285">subscribe/location/1257285</a></li>
     <li><a href="/delete/2376967">delete/2376967</a></li>
 </ul>
+<div class="container"></div>
+
+
+
+{{#extend "scripts"}}
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost');
+  socket.on('init', function (payload) {
+    // payload shoud be an array of image objects
+    console.log(payload);
+    var img_tag = "<img src='" + payload.url + "' width='100px' height='100px'/>";
+    $('.container').append(img_tag);
+
+    socket.emit('success', { my: 'data' });
+  });
+</script>
+{{/extend}}
