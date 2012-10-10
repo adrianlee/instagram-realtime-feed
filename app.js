@@ -5,6 +5,8 @@ var express = require('express'),
     server = http.createServer(app),
     io = require('socket.io').listen(server),
 
+    redis = require('redis'),
+
     // Third Party
     hbs = require('hbs'),
     request = require('request');
@@ -27,6 +29,19 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
+});
+
+////////////////////////////////////////////////
+// Redis
+////////////////////////////////////////////////
+var redis_client = redis.createClient(9917, 'drum.redistogo.com');
+redis_client.auth('83559114fe933019cf60c2e6d7e85972', function (err) {
+  if (err) { throw err; }
+  console.log("Connected to Redis");
+});
+
+redis_client.on("error", function (err) {
+    console.log("Error " + err);
 });
 
 ////////////////////////////////////////////////
@@ -168,14 +183,13 @@ function processPayload(payload) {
 ////////////////////////////////////////////////
 // socket.io
 ////////////////////////////////////////////////
-console.log(io);
+// recent image in redis queue
+var payloadArray = [];
+payloadArray.push({ url: 'http://distilleryimage0.instagram.com/f3088116110e11e2b0c912313b089111_7.jpg' });
+payloadArray.push({ url: 'http://distilleryimage10.instagram.com/c8a3754e0dcf11e2ace922000a1c9ebd_7.jpg' });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('init', { url: 'http://distilleryimage0.instagram.com/f3088116110e11e2b0c912313b089111_7.jpg' });
-  // socket.emit('init', []);
-  socket.on('success', function (data) {
-    console.log(data);
-  });
+  socket.emit('image', payloadArray);
 });
 
 
