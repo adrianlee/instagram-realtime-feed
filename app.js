@@ -203,12 +203,13 @@ function processPayload(payload) {
           link: data[i].link
         };
 
-        if (!redis_client.hexists('media:exist', data[i].images.low_resolution.url)) {
-          redis_client.hset('media:exist', data[i].images.low_resolution.url, "OK");
+        redis_client.hexists('media:exist', obj.url, function (err, reply) {
+          redis_client.hset('media:exist', obj.url, "OK");
           redis_client.lpushx('media', JSON.stringify(obj));
-          payloadArray.push({ url: data[i].images.low_resolution.url });
+          payloadArray.push({ url: obj.url, link: obj.link });
           io.sockets.emit('image', payloadArray);
-        }
+          redis_client.ltrim('media', 0, 99);
+        });
       }
     });
   }
