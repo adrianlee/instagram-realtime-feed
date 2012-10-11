@@ -134,6 +134,7 @@ app.get('/callback', function (req, res) {
 
 app.post('/callback', function (req, res) {
   console.log(req.body);
+  res.send("ACK");
   processPayload(req.body);
 });
 
@@ -143,24 +144,28 @@ app.post('/callback', function (req, res) {
 ////////////////////////////////////////////////
 
 function processPayload(payload) {
-  var i;
+  var minID;
 
-  console.log(payload);
-
-  for (obj in payload) {
-    console.log(obj);
+  for (var i = 0; i < payload.length; i++) {
     var args,
         endpoint,
-        object = obj.object,
-        object_id = obj.object_id;
+        object = payload[i]['object'],
+        object_id = payload[i]['object_id'];
 
     if (object === "geography") {
       endpoint = "https://api.instagram.com/v1/geographies/" + object_id + "/media/recent";
+      if (!!minID) {
+        console.log("minID: " + minID);
+        endpoint += "?&min_id=" + minID;
+      } else {
+        endpoint += "?&count=1";
+      }
+
     } else if (object === "tag") {
       endpoint = "https://api.instagram.com/v1/tags/" + object_id + "/media/recent";
     }
 
-    console.log(endpoint);
+    console.log("Endpoint: " + endpoint);
 
     args = {
       method: "GET",
@@ -172,24 +177,58 @@ function processPayload(payload) {
     };
 
     request(args, function (e, r, body) {
-      console.log("Process Payload");
-      console.log(body);
+      var envelope = JSON.parse(body);
+      var data = envelope.data;
+
+      var payloadArray = [];
+
+      var sorted = data.sort(function(a, b){
+        return parseInt(b.id) - parseInt(a.id);
+      });
+
+      try {
+        minID = parseInt(sorted[0].id);
+        redis_client.set('min-id', minID);
+      } catch (e) {
+        console.log('Error parsing min ID');
+        console.log(sorted);
+      }
+
+      for (var i = 0; i < data.length; i++) {
+        console.log(data[i]);
+        // data[i].images.thumbnail.url
+        // data[i].images.standard_resolution.url
+        var obj = {
+          url: data[i].images.low_resolution.url,
+          link: data[i].link
+        };
+
+        if (!redis_client.hexists('media:exist', data[i].images.low_resolution.url)) {
+          redis_client.hset('media:exist', data[i].images.low_resolution.url, "OK");
+          redis_client.lpushx('media', JSON.stringify(obj));
+          payloadArray.push({ url: data[i].images.low_resolution.url });
+          io.sockets.emit('image', payloadArray);
+        }
+      }
     });
   }
 }
 
-
-
 ////////////////////////////////////////////////
 // socket.io
 ////////////////////////////////////////////////
-// recent image in redis queue
-var payloadArray = [];
-payloadArray.push({ url: 'http://distilleryimage0.instagram.com/f3088116110e11e2b0c912313b089111_7.jpg' });
-payloadArray.push({ url: 'http://distilleryimage10.instagram.com/c8a3754e0dcf11e2ace922000a1c9ebd_7.jpg' });
-
 io.sockets.on('connection', function (socket) {
-  socket.emit('image', payloadArray);
+  // recent image in redis queue
+  redis_client.lrange('media', 0, 9, function(error, media) {
+    console.log(media);
+    var payloadArray = [];
+    for (var i = 0; i < media.length; i++) {
+      if (media[i]) {
+        payloadArray.push(JSON.parse(media[i]));
+      }
+    };
+    socket.emit('image', payloadArray);
+  });
 });
 
 

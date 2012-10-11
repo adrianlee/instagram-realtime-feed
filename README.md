@@ -26,6 +26,9 @@ curl -F 'client_id=ece9571300f54b3a90e8b46b8a7ca882' \
      -F 'callback_url=http://jumjum.jit.su/callback' \
      https://api.instagram.com/v1/subscriptions/
 
+
+curl -F 'client_id=ece9571300f54b3a90e8b46b8a7ca882' -F 'client_secret=eeb25b35adf84786866c6ae7bfae43bb' -F 'object=geography' -F 'aspect=media' -F 'lat=45.485891' -F 'lng=-73.588657' -F 'radius=5000' -F 'callback_url=http://jumjum.jit.su/callback' https://api.instagram.com/v1/subscriptions/
+
 Todo
 ====
 - ~~Listen to instragram callback from subscription and~~ request recent image with subscription callback params

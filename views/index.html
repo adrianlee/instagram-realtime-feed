@@ -17,12 +17,15 @@
   function push(payloadArray) {
     console.log(payloadArray);
     $.each(payloadArray, function (index, payload) {
-        var img_tag = "<img src='" + payload.url + "' width='200px' height='200px'/>";
-        $('.stage').prepend(img_tag);
+      var img_tag = "<img src='" + payload.url + "' width='200px' height='200px'/>";
+      var html = "<a href='" + payload.link + "'>" + img_tag + "</a>";
+      $('.stage').prepend(html);
     });
   }
 
-  var socket = io.connect('http://localhost');
+  var socket;
+  // socket = io.connect('http://localhost');
+  socket = io.connect('http://jumjum.jit.su');
 
   socket.on('image', function (payloadArray) {
     // payload shoud be an array of image objects
